@@ -46,7 +46,7 @@ namespace KartGame.KartSystems
         bool m_FirePressed;
         public float pitch = 0;
         public float roll = 0;
-        public float step = 2.5f;
+        public float step = 0.5f;
 
         bool m_FixedUpdateHappened;
 
@@ -79,6 +79,29 @@ namespace KartGame.KartSystems
                         else
                             return 2*step;
                         
+                    }
+                    break;
+                case 'L':
+                    if (roll <= 5)
+                        return step;
+                    break;
+                case 'R':
+                    if (roll >= -5)
+                        return -step;
+                    break;
+                    break;
+                case 'I':
+                    while (roll != 0)
+                    {
+                        if (roll == step)
+                            return -step;
+                        else if (roll == -step)
+                            return step;
+                        else if (roll > 0)
+                            return -2 * step;
+                        else
+                            return 2 * step;
+
                     }
                     break;
             }
@@ -132,12 +155,22 @@ namespace KartGame.KartSystems
                 pitch += getChairCoordinates('B');
             }
 
-            if (Input.GetKey (KeyCode.LeftArrow) && !Input.GetKey (KeyCode.RightArrow))
+            if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+            {
                 m_Steering = -1f;
-            else if (!Input.GetKey (KeyCode.LeftArrow) && Input.GetKey (KeyCode.RightArrow))
+                roll += getChairCoordinates('L');
+            }
+            else if (!Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
+            {
                 m_Steering = 1f;
+                roll += getChairCoordinates('R');
+            }
             else
+            {
                 m_Steering = 0f;
+                roll += getChairCoordinates('I');
+            }
+                
 
             m_HopHeld = Input.GetKey (KeyCode.Space);
 
