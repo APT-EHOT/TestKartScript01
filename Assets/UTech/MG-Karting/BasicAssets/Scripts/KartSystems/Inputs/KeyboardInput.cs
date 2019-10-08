@@ -46,7 +46,7 @@ namespace KartGame.KartSystems
         bool m_FirePressed;
         public float pitch = 0;
         public float roll = 0;
-        public float step = 0.1f;
+        public float step = 2.5f;
 
         bool m_FixedUpdateHappened;
 
@@ -64,8 +64,22 @@ namespace KartGame.KartSystems
                         return step;
                     break;
                 case 'D':
-                    if (pitch >= 10)
+                    if (pitch >= -10)
                         return -step;
+                    break;
+                case 'B':
+                    while (pitch != 0)
+                    {
+                        if (pitch == step)
+                            return -step;
+                        else if (pitch == -step)
+                            return step;
+                        else if (pitch > 0)
+                            return -2*step;
+                        else
+                            return 2*step;
+                        
+                    }
                     break;
             }
             return 0;
@@ -115,7 +129,7 @@ namespace KartGame.KartSystems
             else
             {
                 m_Acceleration = 0f;
-                pitch = -18;
+                pitch += getChairCoordinates('B');
             }
 
             if (Input.GetKey (KeyCode.LeftArrow) && !Input.GetKey (KeyCode.RightArrow))
