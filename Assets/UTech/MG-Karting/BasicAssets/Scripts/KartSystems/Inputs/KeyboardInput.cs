@@ -4,6 +4,7 @@ using UnityEngine;
 
 // chair dependencies
 using System.IO.Ports;
+using KartGame.ChairSystems;
 
 namespace KartGame.KartSystems
 {
@@ -43,6 +44,9 @@ namespace KartGame.KartSystems
         bool m_HopHeld;
         bool m_BoostPressed;
         bool m_FirePressed;
+        public float pitch = 0;
+        public float roll = 0;
+        public float step = 3f;
 
         bool m_FixedUpdateHappened;
 
@@ -61,6 +65,16 @@ namespace KartGame.KartSystems
                 PortName = "COM13",
             };
             port.Open();
+            FutuRiftSerialPort my = new FutuRiftSerialPort(port);
+            FromSource fromSource = new FromSource(port);
+            float angle = 0.0f;
+            var timer = new System.Timers.Timer(21);
+            timer.Elapsed += (E, A) =>
+            {
+                //System.Console.WriteLine($"{angle} {pitch} {roll} {Length(pitch, roll)}");
+                my.Control(pitch, roll);
+            };
+            timer.Start();
         }
 
         void Update ()
