@@ -46,14 +46,34 @@ namespace KartGame.KartSystems
         bool m_FirePressed;
         public float pitch = 0;
         public float roll = 0;
-        public float step = 3f;
+        public float step = 0.1f;
 
         bool m_FixedUpdateHappened;
 
+        SerialPort port;
+        FutuRiftSerialPort my; 
+        FromSource fromSource;
+
+        // chair coordinates changing method
+        float getChairCoordinates(char direction)
+        {
+            switch (direction)
+            {
+                case 'U':
+                    if (pitch <= 10)
+                        return step;
+                    break;
+                case 'D':
+                    if (pitch >= 10)
+                        return -step;
+                    break;
+            }
+            return 0;
+        }
+
         void Start()
         {
-            // chair systems including
-            SerialPort port = new SerialPort()
+            port = new SerialPort()
             {
                 BaudRate = 115200,
                 DataBits = 8,
@@ -62,11 +82,13 @@ namespace KartGame.KartSystems
                 ReadBufferSize = 4096,
                 WriteBufferSize = 4096,
                 ReadTimeout = 500,
-                PortName = "COM13",
+                PortName = "COM3",
             };
             port.Open();
             FutuRiftSerialPort my = new FutuRiftSerialPort(port);
             FromSource fromSource = new FromSource(port);
+            my = new FutuRiftSerialPort(port);
+            fromSource = new FromSource(port);
             float angle = 0.0f;
             var timer = new System.Timers.Timer(21);
             timer.Elapsed += (E, A) =>
@@ -79,13 +101,22 @@ namespace KartGame.KartSystems
 
         void Update ()
         {
-    
-            if (Input.GetKey (KeyCode.UpArrow))
+
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
                 m_Acceleration = 1f;
+                pitch += getChairCoordinates('U');
+            }
             else if (Input.GetKey (KeyCode.DownArrow))
+            {
                 m_Acceleration = -1f;
+                pitch += getChairCoordinates('D');
+            }  
             else
+            {
                 m_Acceleration = 0f;
+                pitch = -18;
+            }
 
             if (Input.GetKey (KeyCode.LeftArrow) && !Input.GetKey (KeyCode.RightArrow))
                 m_Steering = -1f;
