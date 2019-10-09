@@ -75,8 +75,8 @@ namespace KartGame.KartSystems
         [Tooltip ("A reference to the input that the kart being animated is using for movement.  This must implement IInput.")]
         [RequireInterface (typeof(IInput))]
         public Object input;
-        [Tooltip ("A reference to the animator of the humanoid character driving the kart.")]
-        public Animator playerAnimator;
+        //[Tooltip ("A reference to the animator of the humanoid character driving the kart.")]
+        //public Animator playerAnimator;
         [Tooltip ("A reference to a script that provides information about the kart's movement, usually the KartMovmeent script.  This must implement IKartInfo.")]
         [RequireInterface (typeof(IKartInfo))]
         public Object kartMovement;
@@ -140,8 +140,8 @@ namespace KartGame.KartSystems
         {
             m_SmoothedSteeringInput = Mathf.MoveTowards (m_SmoothedSteeringInput, m_Input.Steering, steeringAnimationDamping * Time.deltaTime);
 
-            playerAnimator.SetFloat (k_HashSteering, m_SmoothedSteeringInput);
-            playerAnimator.SetBool (k_HashGrounded, m_KartMovement.IsGrounded);
+            //playerAnimator.SetFloat (k_HashSteering, m_SmoothedSteeringInput);
+            //playerAnimator.SetBool (k_HashGrounded, m_KartMovement.IsGrounded);
         }
 
         void LateUpdate ()
