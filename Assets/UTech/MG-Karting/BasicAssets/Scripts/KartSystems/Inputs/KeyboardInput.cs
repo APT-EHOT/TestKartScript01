@@ -3,10 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Diagnostics.Eventing.Reader;
+using AOT;
+using Oculus.Avatar;
 
 // chair dependencies
 using System.IO.Ports;
 using KartGame.ChairSystems;
+
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+#if USING_XR_SDK
+using UnityEngine.XR;
+using UnityEngine.Experimental.XR;
+#endif
+
+#if UNITY_2017_2_OR_NEWER
+using Settings = UnityEngine.XR.XRSettings;
+using Node = UnityEngine.XR.XRNode;
+#else
+using Settings = UnityEngine.VR.VRSettings;
+using Node = UnityEngine.VR.VRNode;
+#endif
 
 namespace KartGame.KartSystems
 {
@@ -125,6 +145,7 @@ namespace KartGame.KartSystems
 
         void Start()
         {
+
             port = new SerialPort()
             {
                 BaudRate = 115200,
@@ -156,22 +177,23 @@ namespace KartGame.KartSystems
 
         void Update ()
         {
-            
+
 
             //Debug.Log(Camera.main.transform.X);
             //Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + OVRInput.Get(OVRInput.Axis1D.SecondaryIndexTrigger));
 
-
-            if (Input.GetKey(KeyCode.UpArrow))
+            if (/*Input.GetKey(KeyCode.UpArrow)*/(OVRInput.Get(OVRInput.Axis1D.SecondaryIndexTrigger)>0))
             {
+
                 m_Acceleration = 1f;
                 //pitch += getChairCoordinates('U');
-                /*Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-               */
+                Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+               
                 state = 0;
 
             }
-            else if (Input.GetKey (KeyCode.DownArrow))
+            else if (/*Input.GetKey (KeyCode.DownArrow)*/(OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger) > 0))
             {
                 m_Acceleration = -1f;
                 //pitch += getChairCoordinates('D');
@@ -183,12 +205,18 @@ namespace KartGame.KartSystems
                 //pitch += getChairCoordinates('B');
             }
 
-            if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+            if (/*Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow)*/ (OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick)[0] < 0 ||
+                                                                                          OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick)[0] < 0) &&
+                                                                                         !(OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick)[0] > 0) &&
+                                                                                         !(OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick)[0] > 0))
             {
                 m_Steering = -1f;
                 roll += getChairCoordinates('L');
             }
-            else if (!Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
+            else if (/*!Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow)*/ (OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick)[0] > 0 ||
+                                                                                               OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick)[0] > 0) &&
+                                                                                              !(OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick)[0] < 0) &&
+                                                                                              !(OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick)[0] < 0))
             {
                 m_Steering = 1f;
                 roll += getChairCoordinates('R');
